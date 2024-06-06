@@ -6,6 +6,7 @@ from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 
 nfreqs = 2000 # number of points at which to sample frequency for output plots etc.
+sens_data_dir = "Sensitivity/data/"
 
 h_over_k = scipy.constants.Planck / scipy.constants.Boltzmann # in s*K
 speedoflight = scipy.constants.speed_of_light
@@ -27,7 +28,7 @@ def heaviRange(x, range):
 
 def get_aeff(telescope,plot):
 
-    if( not aeff_dict.find(telescope) ):
+    if( telescope not in aeff_dict ):
         print("No idea what type of telescope I'm supposed to be calculating for. FAIL.")
         sys.exit(-1)
 
@@ -117,26 +118,26 @@ def get_tsys(telescope, gal, pwv, zenith, plot):
 
     Tcmb = 2.73
 
-    freq_array = np.genfromtxt("SKA_Tatm.txt", usecols=0)
+    freq_array = np.genfromtxt(sens_data_dir + "SKA_Tatm.txt", usecols=0)
     if (pwv == "low"):
         pwv_mm = 5.0
-        Tatm_array = np.genfromtxt("SKA_Tatm.txt", usecols=1)
+        Tatm_array = np.genfromtxt(sens_data_dir + "SKA_Tatm.txt", usecols=1)
     elif (pwv == "medium"):
         pwv_mm = 10.0
-        Tatm_array = np.genfromtxt("SKA_Tatm.txt", usecols=2)
+        Tatm_array = np.genfromtxt(sens_data_dir + "SKA_Tatm.txt", usecols=2)
     elif (pwv == "high"):
         pwv_mm = 20.0
-        Tatm_array = np.genfromtxt("SKA_Tatm.txt", usecols=2)
+        Tatm_array = np.genfromtxt(sens_data_dir + "SKA_Tatm.txt", usecols=2)
     Tatm = interp1d(freq_array, Tatm_array, kind='cubic')
     Tsky = lambda freqGHz: Tgal(freqGHz) + Tcmb + Tatm(freqGHz)
 
     ### Opacity
     if (pwv == "low"):
-        tau_array = np.genfromtxt("SKA_tau.txt", usecols=1)
+        tau_array = np.genfromtxt(sens_data_dir + "SKA_tau.txt", usecols=1)
     elif (pwv == "medium"):
-        tau_array = np.genfromtxt("SKA_tau.txt", usecols=2)
+        tau_array = np.genfromtxt(sens_data_dir + "SKA_tau.txt", usecols=2)
     elif (pwv == "high"):
-        tau_array = np.genfromtxt("SKA_tau.txt", usecols=2)
+        tau_array = np.genfromtxt(sens_data_dir + "SKA_tau.txt", usecols=2)
     tau = interp1d(freq_array, tau_array, kind='cubic')
 
     # tau = 0.01    # just eye-balled a reasonable value until I have the full function
